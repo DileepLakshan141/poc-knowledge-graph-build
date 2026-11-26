@@ -18,3 +18,11 @@ export function stageId(workflow: string, stage: string): string {
 export function gateId(workflow: string, stage: string, gate: string): string {
   return `${NodeLabel.Gate}:${workflow}:${stage}:${gate}`;
 }
+
+export function commitId(sha: string): string {
+  return `${NodeLabel.Commit}:${sha}`;
+}
+
+export function artifactId(hash: string): string {
+  return `${NodeLabel.Artifact}:${hash}`;
+}

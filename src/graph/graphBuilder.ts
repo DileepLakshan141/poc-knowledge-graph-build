@@ -1,5 +1,5 @@
 import type { StateRecord } from "../domain/stateRecord.js";
-import { decisionId, gateId, stageId } from "./ids.js";
+import { artifactId, commitId, decisionId, gateId, stageId } from "./ids.js";
 import { NodeLabel, RelType } from "./ontology.js";
 import type { GraphNode, PropertyGraph } from "./propertyGraph.js";
 
@@ -14,6 +14,55 @@ function addActor(
     properties: {},
   });
   graph.addEdge({ from: decision.id, rel: RelType.DecidedBy, to: actor.id });
+}
+
+function addCommit(
+  graph: PropertyGraph,
+  decision: GraphNode,
+  record: StateRecord,
+): void {
+  const commit = graph.ensureNode({
+    id: commitId(record.commit_sha),
+    label: NodeLabel.Commit,
+    properties: {},
+  });
+  graph.addEdge({ from: decision.id, rel: RelType.AtCommit, to: commit.id });
+}
+
+function ensureArtifact(graph: PropertyGraph, hash: string): GraphNode {
+  return graph.ensureNode({
+    id: artifactId(hash),
+    label: NodeLabel.Artifact,
+    properties: {},
+  });
+}
+
+function addApproved(
+  graph: PropertyGraph,
+  decision: GraphNode,
+  record: StateRecord,
+): void {
+  if (record.approved_content_sha256 === "") {
+    return;
+  }
+  const artifact = ensureArtifact(graph, record.approved_content_sha256);
+  graph.addEdge({ from: decision.id, rel: RelType.Approved, to: artifact.id });
+}
+
+function addDependencies(
+  graph: PropertyGraph,
+  decision: GraphNode,
+  record: StateRecord,
+): void {
+  const hashes = Object.values(record.upstream_content_sha256 ?? {});
+  for (const hash of hashes) {
+    const artifact = ensureArtifact(graph, hash);
+    graph.ensureEdge({
+      from: decision.id,
+      rel: RelType.DependsOn,
+      to: artifact.id,
+    });
+  }
 }
 
 function addStage(
@@ -63,4 +112,7 @@ export function addDecision(
   addActor(graph, decision, record);
   const stage = addStage(graph, decision, record);
   addGate(graph, decision, stage, record);
+  addCommit(graph, decision, record);
+  addApproved(graph, decision, record);
+  addDependencies(graph, decision, record);
 }

@@ -9,8 +9,8 @@ describe("addDecision", () => {
   it("adds a decision, its actor and one edge", () => {
     const graph = new PropertyGraph();
     addDecision(graph, feature, aGateDecision());
-    expect(graph.nodeCount).toBe(4);
-    expect(graph.edgeCount).toBe(4);
+    expect(graph.nodeCount).toBe(6);
+    expect(graph.edgeCount).toBe(6);
   });
 
   it("adds an INIT record without a gate", () => {
@@ -18,10 +18,14 @@ describe("addDecision", () => {
     addDecision(
       graph,
       feature,
-      aGateDecision({ event: "INIT", gate_id: undefined }),
+      aGateDecision({
+        event: "INIT",
+        gate_id: undefined,
+        approved_content_sha256: "",
+      }),
     );
-    expect(graph.nodeCount).toBe(3);
-    expect(graph.edgeCount).toBe(2);
+    expect(graph.nodeCount).toBe(4);
+    expect(graph.edgeCount).toBe(3);
   });
 
   it("reuses the actor across decisions", () => {
@@ -36,8 +40,8 @@ describe("addDecision", () => {
       feature,
       aGateDecision({ timestamp: "2026-11-06T17:00:00.000Z" }),
     );
-    expect(graph.nodeCount).toBe(5);
-    expect(graph.edgeCount).toBe(7);
+    expect(graph.nodeCount).toBe(7);
+    expect(graph.edgeCount).toBe(11);
   });
 
   it("fails loudly on the same decision twice", () => {
@@ -46,5 +50,21 @@ describe("addDecision", () => {
     expect(() => addDecision(graph, feature, aGateDecision())).toThrow(
       "already exists",
     );
+  });
+
+  it("creates no artifact for an empty approved hash", () => {
+    const graph = new PropertyGraph();
+    addDecision(graph, feature, aGateDecision({ approved_content_sha256: "" }));
+    expect(graph.getNode("Artifact:")).toBeUndefined();
+  });
+
+  it("links a decision to the artifacts it depends on", () => {
+    const graph = new PropertyGraph();
+    addDecision(
+      graph,
+      feature,
+      aGateDecision({ upstream_content_sha256: { intake: "abc123" } }),
+    );
+    expect(graph.getNode("Artifact:abc123")).toBeDefined();
   });
 });
