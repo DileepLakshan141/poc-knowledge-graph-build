@@ -93,3 +93,13 @@ it("ensureEdge does not duplicate an edge", () => {
   graph.ensureEdge(edge);
   expect(graph.edgeCount).toBe(1);
 });
+
+it("exposes nodes and edges without allowing changes to the graph", () => {
+  const graph = new PropertyGraph();
+  graph.addNode(actor);
+  const nodes = graph.allNodes() as GraphNode[];
+  nodes.pop();
+  expect(graph.nodeCount).toBe(1);
+  expect(graph.allNodes()).toHaveLength(1);
+  expect(graph.allEdges()).toHaveLength(0);
+});

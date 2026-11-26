@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { addDecision } from "./graphBuilder.js";
 import { PropertyGraph } from "./propertyGraph.js";
 import { aGateDecision } from "../testing/recordBuilder.js";
+import { decisionId } from "./ids.js";
 
 const feature = "feature__t2_knowledge-discovery";
 
@@ -66,5 +67,20 @@ describe("addDecision", () => {
       aGateDecision({ upstream_content_sha256: { intake: "abc123" } }),
     );
     expect(graph.getNode("Artifact:abc123")).toBeDefined();
+  });
+
+  it("keeps local_override as true, false or null", () => {
+    const cases = [
+      { value: true, expected: true },
+      { value: false, expected: false },
+      { value: undefined, expected: null },
+    ];
+    for (const { value, expected } of cases) {
+      const graph = new PropertyGraph();
+      const record = { ...aGateDecision(), local_override: value };
+      addDecision(graph, feature, record);
+      const node = graph.getNode(decisionId(feature, record));
+      expect(node?.properties["local_override"]).toBe(expected);
+    }
   });
 });

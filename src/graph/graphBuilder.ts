@@ -105,7 +105,11 @@ export function addDecision(
   const decision: GraphNode = {
     id: decisionId(feature, record),
     label: NodeLabel.Decision,
-    properties: { status: record.status, timestamp: record.timestamp },
+    properties: {
+      status: record.status,
+      timestamp: record.timestamp,
+      local_override: record.local_override ?? null,
+    },
   };
   graph.addNode(decision);
 

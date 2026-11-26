@@ -47,3 +47,23 @@ export function isAllowedEdge(
   const rule = EdgeRules[rel];
   return rule.from === from && rule.to === to;
 }
+
+export type PropertyType = "STRING" | "BOOLEAN";
+
+export const NodeProperties: Record<
+  NodeLabel,
+  Readonly<Record<string, PropertyType>>
+> = {
+  [NodeLabel.Feature]: {},
+  [NodeLabel.Workflow]: {},
+  [NodeLabel.Stage]: {},
+  [NodeLabel.Gate]: {},
+  [NodeLabel.Actor]: {},
+  [NodeLabel.Commit]: {},
+  [NodeLabel.Artifact]: {},
+  [NodeLabel.Decision]: {
+    status: "STRING",
+    timestamp: "STRING",
+    local_override: "BOOLEAN",
+  },
+};

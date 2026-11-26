@@ -23,6 +23,14 @@ export class PropertyGraph {
   private readonly edges: GraphEdge[] = [];
   private readonly edgeKeys = new Set<string>();
 
+  allNodes(): readonly GraphNode[] {
+    return [...this.nodes.values()];
+  }
+
+  allEdges(): readonly GraphEdge[] {
+    return [...this.edges];
+  }
+
   addNode(node: GraphNode): void {
     if (this.nodes.has(node.id)) {
       throw new Error(`Node already exists: ${node.id}`);
