@@ -81,3 +81,15 @@ it("ensureNode rejects the same id with a different label", () => {
     graph.ensureNode({ id: actor.id, label: NodeLabel.Commit, properties: {} }),
   ).toThrow("already used");
 });
+
+it("ensureEdge does not duplicate an edge", () => {
+  const graph = new PropertyGraph();
+  const decision = aNode(NodeLabel.Decision, "d1");
+  const artifact = aNode(NodeLabel.Artifact, "a1");
+  graph.addNode(decision);
+  graph.addNode(artifact);
+  const edge = { from: decision.id, rel: RelType.Approved, to: artifact.id };
+  graph.ensureEdge(edge);
+  graph.ensureEdge(edge);
+  expect(graph.edgeCount).toBe(1);
+});

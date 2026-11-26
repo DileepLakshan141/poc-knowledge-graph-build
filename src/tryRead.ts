@@ -1,20 +1,19 @@
+import { basename } from "node:path";
 import { loadFolderSplit } from "./loadFolder.js";
-import { sortByTimestamp } from "./sortRecords.js";
+import { buildGraph } from "./graph/buildGraph.js";
 
 async function main(): Promise<void> {
-  const { records, failures } = await loadFolderSplit(
-    "fixtures/feature__t2_knowledge-discovery",
+  const folder = "fixtures/feature__t2_knowledge-discovery";
+  const { records, failures } = await loadFolderSplit(folder);
+  const graph = buildGraph(basename(folder), records);
+  console.log(
+    "failures:",
+    failures.length,
+    "nodes:",
+    graph.nodeCount,
+    "edges:",
+    graph.edgeCount,
   );
-  console.log("records:", records.length, "failures:", failures.length);
-  for (const r of sortByTimestamp(records)) {
-    console.log(
-      r.stage_id,
-      r.gate_id ?? "(none)",
-      r.local_override ?? "absent",
-      Object.keys(r.upstream_content_sha256 ?? {}),
-    );
-    // console.log(r.timestamp, r.stage_id, r.gate_id ?? "(none)");
-  }
 }
 
 main();

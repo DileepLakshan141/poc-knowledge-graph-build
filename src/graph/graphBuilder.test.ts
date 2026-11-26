@@ -9,8 +9,19 @@ describe("addDecision", () => {
   it("adds a decision, its actor and one edge", () => {
     const graph = new PropertyGraph();
     addDecision(graph, feature, aGateDecision());
-    expect(graph.nodeCount).toBe(2);
-    expect(graph.edgeCount).toBe(1);
+    expect(graph.nodeCount).toBe(4);
+    expect(graph.edgeCount).toBe(4);
+  });
+
+  it("adds an INIT record without a gate", () => {
+    const graph = new PropertyGraph();
+    addDecision(
+      graph,
+      feature,
+      aGateDecision({ event: "INIT", gate_id: undefined }),
+    );
+    expect(graph.nodeCount).toBe(3);
+    expect(graph.edgeCount).toBe(2);
   });
 
   it("reuses the actor across decisions", () => {
@@ -25,8 +36,8 @@ describe("addDecision", () => {
       feature,
       aGateDecision({ timestamp: "2026-11-06T17:00:00.000Z" }),
     );
-    expect(graph.nodeCount).toBe(3);
-    expect(graph.edgeCount).toBe(2);
+    expect(graph.nodeCount).toBe(5);
+    expect(graph.edgeCount).toBe(7);
   });
 
   it("fails loudly on the same decision twice", () => {

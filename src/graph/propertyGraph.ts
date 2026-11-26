@@ -14,9 +14,14 @@ export type GraphEdge = {
   readonly to: string;
 };
 
+function edgeKey(edge: GraphEdge): string {
+  return `${edge.from}|${edge.rel}|${edge.to}`;
+}
+
 export class PropertyGraph {
   private readonly nodes = new Map<string, GraphNode>();
   private readonly edges: GraphEdge[] = [];
+  private readonly edgeKeys = new Set<string>();
 
   addNode(node: GraphNode): void {
     if (this.nodes.has(node.id)) {
@@ -61,6 +66,14 @@ export class PropertyGraph {
       );
     }
     this.edges.push(edge);
+    this.edgeKeys.add(edgeKey(edge));
+  }
+
+  ensureEdge(edge: GraphEdge): void {
+    if (this.edgeKeys.has(edgeKey(edge))) {
+      return;
+    }
+    this.addEdge(edge);
   }
 
   get edgeCount(): number {
