@@ -65,3 +65,19 @@ describe("PropertyGraph edges", () => {
     ).toThrow("not allowed by ontology");
   });
 });
+
+it("ensureNode returns the existing node instead of duplicating", () => {
+  const graph = new PropertyGraph();
+  const first = graph.ensureNode(actor);
+  const second = graph.ensureNode(actor);
+  expect(second).toBe(first);
+  expect(graph.nodeCount).toBe(1);
+});
+
+it("ensureNode rejects the same id with a different label", () => {
+  const graph = new PropertyGraph();
+  graph.ensureNode(actor);
+  expect(() =>
+    graph.ensureNode({ id: actor.id, label: NodeLabel.Commit, properties: {} }),
+  ).toThrow("already used");
+});
