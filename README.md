@@ -1,3 +1,4 @@
 ﻿# poc-knowledge-graph-build
- <img width="722" height="352" alt="ui_ux kg-poc" src="https://github.com/user-attachments/assets/74715dc4-c0cd-473d-a8d7-f3a262dd33e1" />
+<img width="762" height="372" alt="ui_ux kg-poc (1)" src="https://github.com/user-attachments/assets/cec6da67-e1b0-48ba-a135-42dab23b5ce2" />
+
 
