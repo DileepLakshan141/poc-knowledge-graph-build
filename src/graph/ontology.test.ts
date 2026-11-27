@@ -23,3 +23,9 @@ it("rejects an actor approving a stage", () => {
     isAllowedEdge(NodeLabel.Actor, RelType.Approved, NodeLabel.Stage),
   ).toBe(false);
 });
+
+it("allows a decision to rely on another decision", () => {
+  expect(
+    isAllowedEdge(NodeLabel.Decision, RelType.ReliesOn, NodeLabel.Decision),
+  ).toBe(true);
+});

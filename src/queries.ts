@@ -31,4 +31,13 @@ export const QUERIES: readonly NamedQuery[] = [
       RETURN g.id AS gate, d.timestamp AS at
       ORDER BY at`,
   },
+  {
+    id: "stale-if-code-changes",
+    title: "If the approved code changes, which approvals go stale?",
+    cypher: `
+      MATCH (d:Decision)-[:RELIES_ON*1..5]->(:Decision)-[:DECIDES]->(:Gate {id: 'Gate:enterprise-ai-dlc:implementation:code-ready'})
+      MATCH (d)-[:DECIDES]->(g:Gate)
+      RETURN DISTINCT g.id AS gate, d.timestamp AS at
+      ORDER BY at`,
+  },
 ];

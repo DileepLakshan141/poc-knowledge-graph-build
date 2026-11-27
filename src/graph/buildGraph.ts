@@ -1,6 +1,6 @@
 import type { StateRecord } from "../domain/stateRecord.js";
 import { sortByTimestamp } from "../sortRecords.js";
-import { addDecision } from "./graphBuilder.js";
+import { addDecision, addReliance } from "./graphBuilder.js";
 import { PropertyGraph } from "./propertyGraph.js";
 
 export function buildGraph(
@@ -11,5 +11,6 @@ export function buildGraph(
   for (const record of sortByTimestamp(records)) {
     addDecision(graph, feature, record);
   }
+  addReliance(graph, feature, records);
   return graph;
 }

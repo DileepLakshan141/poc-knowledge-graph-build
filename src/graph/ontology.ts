@@ -22,6 +22,7 @@ export const RelType = {
   FollowedBy: "FOLLOWED_BY",
   Decides: "DECIDES",
   InFeature: "IN_FEATURE",
+  ReliesOn: "RELIES_ON",
 } as const;
 
 export type RelType = (typeof RelType)[keyof typeof RelType];
@@ -37,6 +38,7 @@ export const EdgeRules: Record<RelType, { from: NodeLabel; to: NodeLabel }> = {
   [RelType.Approved]: { from: NodeLabel.Decision, to: NodeLabel.Artifact },
   [RelType.DependsOn]: { from: NodeLabel.Decision, to: NodeLabel.Artifact },
   [RelType.FollowedBy]: { from: NodeLabel.Decision, to: NodeLabel.Decision },
+  [RelType.ReliesOn]: { from: NodeLabel.Decision, to: NodeLabel.Decision },
 };
 
 export function isAllowedEdge(

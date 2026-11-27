@@ -120,3 +120,32 @@ export function addDecision(
   addApproved(graph, decision, record);
   addDependencies(graph, decision, record);
 }
+
+export function addReliance(
+  graph: PropertyGraph,
+  feature: string,
+  records: StateRecord[],
+): void {
+  const approvers = new Map<string, string[]>();
+  for (const record of records) {
+    if (record.approved_content_sha256 !== "") {
+      const known = approvers.get(record.approved_content_sha256) ?? [];
+      approvers.set(record.approved_content_sha256, [
+        ...known,
+        decisionId(feature, record),
+      ]);
+    }
+  }
+
+  for (const record of records) {
+    for (const hash of Object.values(record.upstream_content_sha256 ?? {})) {
+      for (const upstream of approvers.get(hash) ?? []) {
+        graph.ensureEdge({
+          from: decisionId(feature, record),
+          rel: RelType.ReliesOn,
+          to: upstream,
+        });
+      }
+    }
+  }
+}
